@@ -1,41 +1,73 @@
 /* eslint-disable */
-const mongoose = require('mongoose');
-const validator = require('validator');
+const {  DataTypes } = require('sequelize');
+const sequelize = require('../utils/database')
+// const bcrypt = require('bcryptjs');
 
-const userSchema = new mongoose.Schema({
+
+const User = sequelize.define('User', {
+  _id: {
+    type: DataTypes.UUID,  
+    defaultValue: DataTypes.UUIDV4, 
+    primaryKey: true 
+  },
   name: {
-    type: String,
-    required: [true, 'Please tell us your name!']
+    type: DataTypes.STRING,
+    allowNull: false,
   },
   email: {
-    type: String,
-    required: [true, 'Please provide your email'],
+    type: DataTypes.STRING,
+    allowNull: false,
     unique: true,
-    lowercase: true,
-    validate: [validator.isEmail, 'Please provide a valid email']
+
   },
   password: {
-    type: String,
-    required: [true, 'Please provide a password'],
-    minlength: 8,
-    select: false
+    type: DataTypes.STRING,
+    allowNull: false,
+    validate: {
+      notNull: { msg: 'Please provide a password' },  
+      len: {
+        args: [8],
+        msg: 'Password must be at least 8 characters long' 
+      }
+    },
+    
   },
   passwordConfirm: {
-    type: String,
-    required: [true, 'Please confirm your password'],
+    type: DataTypes.VIRTUAL, 
+    allowNull: false,
     validate: {
-      // This only works on CREATE and SAVE!!!
-      validator: function(el) {
-        return el === this.password;
-      },
-      message: 'Passwords are not the same!'
+      isEqual(value) {
+        if (value !== this.password) {
+          throw new Error('Passwords are not the same!');  
+        }
+      }
     }
   },
-  passwordChangedAt: Date,
-  passwordResetToken: String,
-  passwordResetExpires: Date,
+  passwordChangedAt: {
+    type: DataTypes.DATE,
+    allowNull:true,
+  },
+  passwordResetToken: {
+    type: DataTypes.STRING,
+    allowNull:true
+  },
+  passwordResetExpires: {
+    type: DataTypes.DATE,
+    allowNull:true
+  }
+}, {
+  
+  timestamps: true,
+  // hooks: {
+  
+  //   beforeSave: async (user, options) => {
+  //     if (user.password) {
+  //       const salt = await bcrypt.genSalt(12);
+  //       user.password = await bcrypt.hash(user.password, salt);
+  //     }
+  //   }
+  // }
 });
 
 
-const User =  mongoose.model('User', userSchema);
 module.exports = User;

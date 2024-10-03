@@ -1,24 +1,34 @@
 /* eslint-disable */
-const mongoose = require('mongoose');
-const contactSchema = new mongoose.Schema({
-    email:{
-        type:String,
-        unique:true,
-        required:[true,'A contact must have an email'],
+const { DataTypes } = require('sequelize');
+const sequelize = require('../utils/database')
 
-    },
-    address:{
-        type:String,
-        required:[true,'A contact must have an address'],
 
-    },
-    created_at:{
-        type:Date,
-        default:Date.now()
+
+const Contact = sequelize.define('Contact', {
+    _id: {
+        type: DataTypes.UUID,  
+        defaultValue: DataTypes.UUIDV4, 
+        primaryKey: true 
+      },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+    validate: {
+      notNull: { msg: 'A contact must have an email' }, 
+      notEmpty: { msg: 'A contact must have an email' },
+      isEmail: { msg: 'Please provide a valid email address' } 
     }
+  },
+  address: {
+    type: DataTypes.STRING,
+    allowNull: false,
+   
+  },
+  
+}, {
+  timestamps: true,  
+});
 
-})
 
-const Contact =  mongoose.model('Contact', contactSchema);
-module.exports =  Contact;
-
+module.exports = Contact;

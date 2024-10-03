@@ -4,10 +4,13 @@ const AppError = require('../utils/appError');
 exports.createOne = (Model)=>{
     return async(req,res,next)=>{
         try{
-            const doc = await About.create(req.body);
+          
+            const doc = await Model.create(req.body);
             res.status(201).json({
                 status:'success',
-                data:doc
+                data:{
+                    ...doc.dataValues
+                }
             })
     
         }catch(err){
@@ -21,8 +24,8 @@ exports.createOne = (Model)=>{
 exports.deleteOne = (Model)=>{
     return async(req,res,next)=>{
         try{
-            const doc =  await About.findByIdAndDelete(req.params.id);
-            if(!doc){
+            const doc =  await Model.destroy({where:{_id:req.params.id}});
+            if(doc === 0){
                 return next(new AppError('No document found with that ID',404));
             }
     
@@ -39,19 +42,17 @@ exports.deleteOne = (Model)=>{
     }
 
 }
+
 exports.updateOne = (Model)=>{
     return async(req,res,next)=>{
         try{
-            const doc = await About.findByIdAndUpdate(req.params.id,req.body,{
-                new:true,
-                runValidators:true
-            });
-            if(!doc){
+            const [affectedCount, affectedRows] = await Model.update(req.body,{where:{_id:req.params.id},returning:true});
+            if(affectedCount === 0){
                 return next(new AppError('No document found with that ID',404));
             }
             res.status(200).json({
                 status:'success',
-                data:doc
+                data:affectedRows[0]
             })
     
         }catch(err){
@@ -64,7 +65,7 @@ exports.updateOne = (Model)=>{
 exports.getOne = (Model)=>{
     return async(req,res,next)=>{
         try{
-            const  doc = await About.findById(req.params.id);
+            const  doc = await Model.findOne({where:{_id:req.params.id}});
             if(!doc){
                 return next(new AppError('No document found with that ID',404));
             }
@@ -84,9 +85,10 @@ exports.getOne = (Model)=>{
 exports.getAll = (Model)=>{
     return async(req,res,next)=>{
         try{
-            const docs = await About.find();
+            const docs = await Model.findAll();
             res.status(200).json({
                 status:'success',
+                results:docs.length,
                 data:docs
             })
     

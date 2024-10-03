@@ -1,28 +1,36 @@
 /* eslint-disable */
-const mongoose = require('mongoose');
-const sisterSchema = new mongoose.Schema({
-    name:{
-        type:String,
-        required:[true,'A sister-concern must have a name'],
-        trim:true,
-    },
-    logo:{
-        type:String
-    },
-    short_description:{
-        type:String,
-        required:[true,'A sister-concern must have a short description'],
-        trim:true
-    },
-    long_description:{
-        type:String,
-        required:[true,'A sister-concern must  have a long description'],
-        trim:true
+const {DataTypes } = require('sequelize');
+const sequelize = require('../utils/database');
 
-    },
-    created_at:{
-        type:Date,
-        default:Date.now()
-    }
 
-})
+const Sister = sequelize.define('Sister', {
+    _id: {
+        type: DataTypes.UUID,  
+        defaultValue: DataTypes.UUIDV4, 
+        primaryKey: true 
+      },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    logo: {
+      type: DataTypes.STRING,
+      allowNull:false,
+    },
+    short_description: {
+      type: DataTypes.STRING,
+      allowNull: false,
+     
+    },
+    long_description: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      
+    },
+   
+  }, {
+   
+    timestamps: true,
+  });
+  
+  module.exports = Sister;
