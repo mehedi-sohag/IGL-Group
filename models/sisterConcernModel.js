@@ -4,27 +4,27 @@ const sequelize = require('../utils/database');
 
 
 const Sister = sequelize.define('Sister', {
-    _id: {
-        type: DataTypes.UUID,  
-        defaultValue: DataTypes.UUIDV4, 
-        primaryKey: true 
-      },
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
     name: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     logo: {
       type: DataTypes.STRING,
-      allowNull:false,
+      allowNull:true,
     },
     short_description: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
      
     },
     long_description: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       
     },
    

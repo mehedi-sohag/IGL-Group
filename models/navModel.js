@@ -4,23 +4,22 @@ const sequelize = require('../utils/database')
 
 
 const Nav = sequelize.define('Nav', {
-   _id: {
-      type: DataTypes.UUID,  
-      defaultValue: DataTypes.UUIDV4, 
-      primaryKey: true 
-    },
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
   title: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   link: {
     type: DataTypes.STRING,
-    allowNull: false,  
+    allowNull: true,  
   },
   subItems: {
-    type: DataTypes.JSON, // Changed from ARRAY to JSON
+    type: DataTypes.JSON, 
     allowNull: true,
-    // You can add validation to ensure it's an array of strings
     validate: {
       isArrayOfStrings(value) {
         if (value && !Array.isArray(value)) {
@@ -33,9 +32,8 @@ const Nav = sequelize.define('Nav', {
     }
   },
   subItems_link: {
-    type: DataTypes.JSON, // Changed from ARRAY to JSON
+    type: DataTypes.JSON, 
     allowNull: true,
-    // You can add validation to ensure it's an array of strings
     validate: {
       isArrayOfStrings(value) {
         if (value && !Array.isArray(value)) {

@@ -6,11 +6,10 @@ exports.createOne = (Model)=>{
         try{
           
             const doc = await Model.create(req.body);
+            console.log(doc)
             res.status(201).json({
                 status:'success',
-                data:{
-                    ...doc.dataValues
-                }
+                data:doc.dataValues
             })
     
         }catch(err){
@@ -24,36 +23,17 @@ exports.createOne = (Model)=>{
 exports.deleteOne = (Model)=>{
     return async(req,res,next)=>{
         try{
-            const doc =  await Model.destroy({where:{_id:req.params.id}});
+            const doc =  await Model.destroy({where:{id:req.params.id}});
+            console.log(doc,'delete data count')
             if(doc === 0){
                 return next(new AppError('No document found with that ID',404));
             }
     
-            res.status(204).json({
-                data:'success',
-                data:null
-            })
-    
-    
-        }catch(err){
-            next(err)
-        }
-    
-    }
-
-}
-
-exports.updateOne = (Model)=>{
-    return async(req,res,next)=>{
-        try{
-            const [affectedCount, affectedRows] = await Model.update(req.body,{where:{_id:req.params.id},returning:true});
-            if(affectedCount === 0){
-                return next(new AppError('No document found with that ID',404));
-            }
             res.status(200).json({
                 status:'success',
-                data:affectedRows[0]
+                message:'Deleted data successfully!'
             })
+    
     
         }catch(err){
             next(err)
@@ -62,10 +42,31 @@ exports.updateOne = (Model)=>{
     }
 
 }
+
+exports.updateOne = (Model) => {
+    return async (req, res, next) => {
+      try {
+        const doc = await Model.update(req.body, {
+          where: { id: req.params.id },
+          returning: true,
+        });
+        
+        if (doc[1] === 0) {
+          return next(new AppError('No document found with that ID', 404));
+        }
+        res.status(200).json({
+          status: 'success',
+          message:'Data successfully updated!'
+        });
+      } catch (err) {
+        next(err);
+      }
+    };
+  };
 exports.getOne = (Model)=>{
     return async(req,res,next)=>{
         try{
-            const  doc = await Model.findOne({where:{_id:req.params.id}});
+            const  doc = await Model.findOne({where:{id:req.params.id}});
             if(!doc){
                 return next(new AppError('No document found with that ID',404));
             }

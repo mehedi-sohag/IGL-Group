@@ -3,23 +3,22 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../utils/database');
 
 const About = sequelize.define('About', {
-  _id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
   },
   short_description: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   long_description: {
-    type: DataTypes.TEXT, // Changed from STRING to TEXT
-    allowNull: false,
+    type: DataTypes.TEXT, 
+    allowNull: true,
   },
   images: {
-    type: DataTypes.JSON, // Changed from ARRAY to JSON
+    type: DataTypes.JSON, 
     allowNull: true,
-    // You can add validation to ensure it's an array of strings
     validate: {
       isArrayOfStrings(value) {
         if (value && !Array.isArray(value)) {
@@ -32,13 +31,21 @@ const About = sequelize.define('About', {
     }
   },
   imageCover: {
-    type: DataTypes.STRING,
-    allowNull: true,
+    type: DataTypes.JSON, 
+    validate: {
+      isArrayOfStrings(value) {
+        if (value && !Array.isArray(value)) {
+          throw new Error('Images must be an array of strings');
+        }
+        if (value && !value.every(item => typeof item === 'string')) {
+          throw new Error('Each image must be a string');
+        }
+      }
+    }
   },
   choose_us: {
-    type: DataTypes.JSON, // Changed from ARRAY to JSON
+    type: DataTypes.JSON, 
     allowNull: true,
-    // Similar validation as images
     validate: {
       isArrayOfStrings(value) {
         if (value && !Array.isArray(value)) {
@@ -49,10 +56,11 @@ const About = sequelize.define('About', {
         }
       }
     }
+   
   }
 }, {
-  timestamps: true, // Sequelize will automatically manage createdAt and updatedAt
+  timestamps: true, 
 });
 
-// Export the About model
+
 module.exports = About;
